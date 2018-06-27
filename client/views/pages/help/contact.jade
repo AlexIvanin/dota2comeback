@@ -1,0 +1,26 @@
+template(name='contact')
+	if currentUser
+		.container
+			.row
+				.col-sm-12
+					.page-header
+						h1 Написать тикет
+			.row
+				fieldset
+					.col-sm-offset-3.col-sm-6.well
+						form(role='form')
+						.form-group
+							label(for='ticketUrgency') Срочность
+							select#ticketUrgency.form-control
+								option(value='1') Высокая
+								option(value='2' selected) Средняя
+								option(value='3') Низкая
+						.form-group
+							label(for='ticketTheme') Тема
+							input#ticketTheme.form-control(type='text' placeholder='Коротко опишите вопрос' maxlength='50')
+						.form-group
+							label(for='ticketDescription') Вопрос
+							textarea#ticketDescription.form-control(placeholder='Полностью опишите суть проблемы' rows='7')
+						button.btn.btn-success.btn-block(data-loading-text='Отправляем...') Отправить
+	else
+		+forbidden

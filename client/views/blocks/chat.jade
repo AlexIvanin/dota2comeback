@@ -1,0 +1,57 @@
+template(name='chat')
+	.panel.panel-default
+		.panel-heading
+			a.chat-link(href='#tab-chat' data-toggle='tab') ЧАТ
+			a.pull-right.text-muted.chat-online(href='#tab-online' data-toggle='tab') ONLINE {{usersOnlineCount}} / {{config "usersCount"}}
+		.tab-content
+			#tab-chat.tab-pane.active.fade.in
+				.panel-body(style='padding: 0')
+					#chat
+						each messages
+							+chatMessage
+						else
+							br
+							br
+							br
+							br
+							br
+							br
+							br
+							br
+							p.lead.text-muted.text-center Чат пуст
+				.panel-footer
+					if currentUser
+						.input-group
+							input#chatMessageTextInput.form-control(type='text' placeholder='Сообщение')
+							span.input-group-btn
+								button#chatMessageSendButton.btn.btn-default
+									span.glyphicon.glyphicon-chevron-right
+					else
+						unless loggingIn
+							.input-group
+								input.form-control(type='text' placeholder='Войдите в аккаунт' disabled)
+								span.input-group-btn
+									button.btn.btn-default(disabled)
+										span.glyphicon.glyphicon-chevron-right
+			#tab-online.tab-pane.fade
+				.panel-body(style='padding: 0')
+					table.table.table-hover.table-striped
+						tbody
+							each usersOnline
+								tr
+									td
+										a(href='/user/{{id}}')
+											img(height='32' src='{{services.steam.avatar.small}}' style='border-radius: 50%' alt='Аватар пользователя {{profile.name}}' title='Перейти в профиль {{profile.name}}')
+											|  {{profile.name}}
+
+template(name='chatMessage')
+	p
+		with user
+			a(href='/user/{{id}}')
+				img.img-responsive(src='{{services.steam.avatar.small}}' alt='{{profile.name}}' style='display: inline; height: 19px; border-radius: 50%' class='{{#if currentMatch}}user-status-ingame-small{{else}}{{#if status.online}}user-status-online-small{{else}}user-status-offline-small{{/if}}{{/if}}')
+				|  
+				if $eq currentRole 'admin'
+					strong.text-danger= profile.name
+				else
+					strong= profile.name
+			| : {{../message}}

@@ -1,0 +1,41 @@
+template(name='promo')
+	#promoCarousel.carousel.slide
+		.carousel-inner
+			.item.active(style='height: 400px; background: url(/img/promo.png) no-repeat left center; background-size: cover;')
+				.container
+					.carousel-caption
+						.col-xs-5
+							img.img-responsive.pull-right(src='/img/logo.png' style='height: 250px')
+						.col-xs-7
+							.row
+								.col-xs-12
+									p.text-info D2C - Игры на деньги и вещи в Dota 2
+									ul
+										li Все автоматически
+										li Множество модов
+										li Реферальная система
+										li Вывод от 50 рублей
+							.row
+								.col-xs-12
+									button#btn-login.btn.btn-lg.btn-info.btn-login Вход через Steam
+			.item(style='height: 400px; background: url(/img/promo-market.png?1231) no-repeat left center; background-size: cover;')
+				.container
+					.carousel-caption
+						.row
+							.col-xs-offset-6.col-xs-6(style='height: 200px; color: #39162F; text-shadow: none;')
+								p.lead D2C Market - торговая площадка
+								ul
+									li Минимальная комиссия
+									li Все автоматически
+									li Место под 30 вещей
+									li Общий счет с D2C
+						.row
+							.col-xs-offset-6.col-xs-6
+								a(href='http://market.dota2comeback.com' target='_blank' style='border-color: #3e8f3e').btn.btn-lg.btn-success Перейти на D2C Market
+		a.left.carousel-control(href='#promoCarousel' role='button' data-slide='prev')
+			span.glyphicon.glyphicon-chevron-left(aria-hidden='true')
+			span.sr-only Сюда
+
+		a.right.carousel-control(href='#promoCarousel' role='button' data-slide='next')
+			span.glyphicon.glyphicon-chevron-right(aria-hidden='true')
+			span.sr-only Туда

@@ -1,0 +1,77 @@
+template(name='userSettings')
+	.container
+		.row
+			.col-sm-3
+				.row
+					.col-sm-12
+						a.thumbnail(href='/user/{{id}}')
+							img.img-responsive(style='width: 100%' src='{{services.steam.avatar.full}}' alt='{{profile.name}}')
+
+				.row
+					.col-md-12
+						.list-group
+							a.list-group-item(href='/user/{{id}}')
+								i.glyphicon.glyphicon-arrow-left
+								|  В профиль
+			.col-sm-9
+				.row
+					.col-md-12
+						.page-header(style='margin-top: 0')
+							h1(style='margin: 0')
+								=profile.name
+								span.text-muted - настройки
+				.row
+					.col-sm-12
+						.form-group
+							.form-horizontal
+								fieldset
+									p.lead Общие
+									if isInRole 'admin'
+										.form-group
+											label.col-sm-4.control-label(for='#inputName') Никнейм
+											.col-sm-5
+												input#inputName.form-control(placeholder='Никнейм пользователя' value='{{profile.name}}')
+										.form-group
+											label.col-sm-4.control-label(for='#inputMoney') Деньги
+											.col-sm-5
+												input#inputMoney.form-control(type='number' placeholder='Количество денег' value='{{toFixed profile.money 2}}')
+										if $neq currentUser._id _id
+											.form-group
+												label.col-sm-4.control-label(for='#selectRole') Группа
+												.col-sm-5
+													select#selectRole.form-control
+														if $eq currentRole "user"
+															option(selected) user
+														else
+															option user
+														if $eq currentRole "banned"
+															option(selected) banned
+														else
+															option admin
+														if $eq currentRole "admin"
+															option(selected) admin
+														else
+															option admin
+									.form-group
+										label.col-sm-4.control-label(for='#inputEmail') Email
+										.col-sm-5
+											input#inputEmail.form-control(type='email' placeholder='Ваша почта' value='{{profile.email}}')
+									hr
+									p.lead Кошельки
+									.form-group
+										label.col-sm-4.control-label(for='#inputQiwi') QIWI
+										.col-sm-5
+											input#inputQiwi.form-control(placeholder='+7 XXX XXXXXXX' value='{{profile.qiwi}}')
+									.form-group
+										label.col-sm-4.control-label(for='#inputWM') WebMoney
+										.col-sm-5
+											input#inputWM.form-control(placeholder='RXXXXXXXXXXXX' value='{{profile.wm}}' pattern='[R][0-9]{12}')
+									hr
+									p.lead Реферальная система
+									.form-group
+										label.col-sm-4.control-label(for='#inputRef') Реферальная ссылка
+										.col-sm-5
+											input#inputRef.form-control(value='http://{{config "hostname"}}?ref={{id}}' readonly style='cursor: text')
+											if invitedUser
+												span Вас пригласил:
+													a(href='/user/{{invitedUser.id}}')=invitedUser.profile.name

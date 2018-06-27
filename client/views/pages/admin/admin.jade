@@ -1,0 +1,47 @@
+template(name='admin')
+	if isInRole 'admin'
+		.container
+			.row
+				.col-sm-12
+					.page-header
+						h2 Управление
+							span.text-muted - статистика
+			.row
+				.col-sm-9
+					.row
+						.col-sm-4.text-center
+							h1.text-info {{config "matchesCount"}}
+							span.text-muted Матчей сыграно
+						.col-sm-4.text-center
+							h1.text-info {{toFixed money 2}} р.
+							span.text-muted Общий доход
+						.col-sm-4.text-center
+							h1.text-info {{config "usersCount"}}
+							span.text-muted Пользователей
+					hr
+					.row
+						.col-sm-4.text-center
+							h1.text-info {{config "usersOnServersCount"}}
+							span.text-muted Игроков на серверах
+						.col-sm-4.text-center
+							h1.text-info {{usersOnlineCount}}
+							span.text-muted Пользователей онлайн
+						.col-sm-4.text-center
+							h1.text-info {{config "matchesInGameCount"}}
+							span.text-muted Серверов запущено
+					hr
+					.row
+						.col-sm-4.text-center
+							h1.text-info {{ramLoad}}%
+							span.text-muted RAM
+						.col-sm-4.text-center
+							h1.text-info {{cpuLoad}}%
+							span.text-muted CPU
+						.col-sm-4.text-center
+							h1.text-info {{toFixed hddLoad.free 1}} GB
+							span.text-muted HDD
+					hr
+				.col-sm-3
+					+adminMenu
+	else
+		+forbidden

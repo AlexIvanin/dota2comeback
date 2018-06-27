@@ -1,0 +1,58 @@
+template(name='nav')
+	nav#navbar.navbar.navbar-default.navbar-fixed-top(role='navigation')
+		.container
+			ul.nav.navbar-nav
+				li.dropdown
+					a.dropdown-toggle(href='#' data-toggle='dropdown' aria-expanded='true' style='font-size: 18px; line-height: 20px;')
+						span.text-info
+							| D2C - Игры на деньги
+							span.caret
+					ul.dropdown-menu(style='width: 231px')
+						li
+							a(href='http://market.dota2comeback.com')
+								span.text-success Market - Торговая площадка
+						li.disabled
+							a(href='#') Bets - Ставки на матчи
+				li(class='{{isActiveRoute regex="index"}}')
+					a(href='{{pathFor "index"}}')
+						span.glyphicon.glyphicon-home
+						|  Главная
+				li(class='{{isActiveRoute regex="news"}}')
+					a(href='{{pathFor "news"}}')
+						span.glyphicon.glyphicon-th-list
+						|  Новости
+				li(class='{{isActiveRoute regex="top"}}')
+					a(href='{{pathFor "top"}}')
+						span.glyphicon.glyphicon-star
+						|  Топ
+				li.dropdown
+					a.dropdown-toggle(href='#' data-toggle='dropdown')
+						span.glyphicon.glyphicon-info-sign
+						| О проекте
+						span.caret
+					ul.dropdown-menu
+						li
+							a(href='{{pathFor "about"}}') О проекте
+						li
+							a(href='{{pathFor "help"}}') FAQ
+						li
+							a(href='{{pathFor "contacts"}}') Контакты
+						li
+							a(href='{{pathFor "donate"}}') Помочь проекту
+						if currentUser
+							li
+								a(href='{{pathFor "contact"}}')
+									|  Написать тикет
+				if isInRole 'admin'
+					li(class='{{isActiveRoute regex="admin"}}')
+						a(href='{{pathFor "admin"}}')
+							span.glyphicon.glyphicon-cog
+							|  Админпанель
+			ul.nav.navbar-nav.navbar-right
+				if currentUser
+					+userBar
+				else
+					unless loggingIn
+						li
+							a#btn-login(href='#' style='height: 50px')
+								img(src='/img/sits_small.png' alt='Войти через Steam')

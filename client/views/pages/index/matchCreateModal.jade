@@ -1,0 +1,181 @@
+template(name='matchCreateModal')
+	#matchCreateModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='matchCreateModalLabel' aria-hidden='true')
+		.modal-dialog
+			.modal-content
+				.modal-header
+					button.close(data-dismiss='modal')
+						span(aria-hidden='true') &times;
+						span.sr-only Закрыть
+					h4#matchCreateModalLabel.modal-title Создание матча - настройки
+				.modal-body
+					.row
+						.col-xs-12
+							.form-horizontal
+								.form-group
+									.col-xs-offset-4.col-xs-8
+										.btn-group
+											button.btn.btn-default.btn-sm.set-gametype-money.active Игра на деньги
+											button.btn.btn-default.btn-sm.set-gametype-items Игра на вещи
+								
+								.match-type-money
+									.form-group
+										label.col-xs-4.control-label(for='selectMoney') Ставка
+										.col-xs-8
+											.input-group
+												input#selectMoney.form-control(type='number' min='{{config "minMoney"}}' value='0' max='{{currentUser.profile.money}}')
+												span.input-group-addon
+													i.fa.fa-rub
+											span.help-block В случае победы вы получите {{matchWinMoney}} р.
+
+								.match-type-items(style='display: none;')
+									.form-group
+										label.col-xs-4.control-label(for='selectMoney') Предметы
+										.col-xs-8
+											.well.text-center
+												if currentUser.items.count
+													b.text-info Выберите предметы
+													br
+													br
+													each currentUser.items
+														+item_nano
+													
+												else
+													p.text-warning Ваш инвентарь пуст
+													p.text-muted Чтобы играть на вещи, необходимо войти в аккаунт на <a href='http://market.dota2comeback.com' target='_blank'>маркете</a>, а затем добавить их в <a href="http://market.dota2comeback.com/user/{{currentUser.id}}" target='_blank'>профиле</a>.
+								.form-group
+									label.col-xs-4.control-label(for='selectType') Тип
+									.col-xs-8
+										select#selectType.form-control
+											option(value='1') 1x1
+											option(value='2') 2x2
+											option(value='3') 3x3
+											option(value='5') 5x5
+								.form-group
+									label.col-xs-4.control-label(for='selectMoney') Команда
+									.col-xs-8
+										select#selectTeam.form-control
+											option(value='good') Radiant
+											option(value='bad') Dire
+								.form-group
+									label.col-xs-4.control-label(for='selectMode') Мод
+									.col-xs-8
+										select#selectMode.form-control
+											if moreTwoSlots
+												option(value='1') All Pick
+												if moreSixSlots
+													option(value='2') Captains Mode
+											option(value='5') All Random
+											option(value='4') Single Draft
+											unless moreSixSlots
+												option(value='11') Mid Only
+					br
+					.row
+						.col-xs-6
+							.thumbnail.map-checkbox
+								img.img-responsive(src='/img/dota_minimap.jpg' alt='Карта Dota 2' title='Отметьте участки, по которым будут идти крипы' style='width: 100%')
+								if moreSixSlots
+									input#creeps-top.map-creeps-top(type='checkbox' checked disabled)
+								else
+									if selectedMidOnly
+										input#creeps-top.map-creeps-top(type='checkbox' disabled)
+									else
+										unless moreTwoSlots
+											input#creeps-top.map-creeps-top(type='checkbox' disabled)
+										else
+											unless moreFourSlots
+												input#creeps-top.map-creeps-top(type='checkbox')
+											else
+												input#creeps-top.map-creeps-top(type='checkbox' checked)
+								label.map-creeps-top(for='creeps-top') TOP
+
+								if moreSixSlots
+									input#creeps-mid.map-creeps-mid(type='checkbox' checked disabled)
+								else
+									if selectedMidOnly
+										input#creeps-mid.map-creeps-mid(type='checkbox' checked disabled)
+									else
+										unless moreTwoSlots
+											input#creeps-mid.map-creeps-mid(type='checkbox' checked disabled)
+										else
+											input#creeps-mid.map-creeps-mid(type='checkbox' checked)
+								label.map-creeps-mid(for='creeps-mid') MID
+
+								label.map-creeps-bot(for='creeps-bot') BOT
+								if moreSixSlots
+									input#creeps-bot.map-creeps-bot(type='checkbox' checked disabled)
+								else
+									if selectedMidOnly
+										input#creeps-bot.map-creeps-bot(type='checkbox' disabled)
+									else
+										unless moreTwoSlots
+											input#creeps-bot.map-creeps-bot(type='checkbox' disabled)
+										else
+											unless moreFourSlots
+												input#creeps-bot.map-creeps-bot(type='checkbox')
+											else
+												input#creeps-bot.map-creeps-bot(type='checkbox' checked)
+						.col-xs-6
+							br
+							br
+							.form-group
+								if moreSixSlots
+									input#setRunes(type='checkbox' disabled)
+								else
+									input#setRunes(type='checkbox')
+								label(for='setRunes') Без рун
+							.form-group
+								if moreSixSlots
+									input#setRunes(type='checkbox' disabled)
+								else
+									input#setNeutrals(type='checkbox')
+								label(for='setNeutrals') Без нейтралов
+							.form-group
+								input#setPassword(type='checkbox')
+								label(for='setPassword') Установить пароль
+							if settedPassword
+								.form-group
+									input#inputPassword.form-control(type='password' placeholder='Пароль на игру')
+							.form-group
+								input#setTV(type='checkbox')
+								label(for='setTV') Включить TV-трансляцию
+					unless moreSixSlots
+						.row
+							.form-group
+								.col-xs-4
+									.input-group
+										span.input-group-addon До
+										select#selectMaxKills.form-control(style='appearance: none; -moz-appearance: none; -webkit-appearance: none; border-radius: 0;')
+											option(value='0') -----
+											option 1
+											option 2
+											option 3
+											option 4
+											option 5
+										span.input-group-addon убийств
+								.col-xs-4
+									.input-group
+										span.input-group-addon До
+										select#selectMaxTowers.form-control(style='appearance: none; -moz-appearance: none; -webkit-appearance: none; border-radius: 0')
+											option(value='0') -----
+											option 1
+											option 2
+										span.input-group-addon вышек
+								if selectedMidOnly
+									unless moreTwoSlots
+										.col-xs-4
+											.input-group
+												span.input-group-addon Герой
+												select#selectedHero.form-control(style='appearance: none; -moz-appearance: none; -webkit-appearance: none; border-radius: 0')
+													option(value='0') Не важно
+													each heroes
+														option(value='{{_id}}')=name
+
+				.modal-footer
+					button.btn.btn-danger(data-dismiss='modal') Отмена
+					if selectedMoneyValid
+						if userHasMoney
+							button#btn-create-match.btn.btn-info(style='font-weight: bold') Создать матч
+						else
+							button.btn.btn-primary(disabled) Не достаточно средств
+					else
+						button.btn.btn-primary(disabled) Неправильная ставка

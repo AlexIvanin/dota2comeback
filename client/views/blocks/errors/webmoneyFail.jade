@@ -1,0 +1,8 @@
+template(name='webmoneyFail')
+	.jumbotron.text-center
+		.container
+			h1 Ошибка платежа
+			p.lead Платеж не завершен
+			a.btn.btn-lg.btn-default(href='/') На главную
+			if currentUser
+				a.btn.btn-lg.btn-primary(href='/user/{{currentUser.id}}') В профиль

@@ -1,0 +1,15 @@
+template(name='footer')
+	footer
+		.container
+			.row
+				.text-muted.credit.pull-left {{config "footer"}}
+				.text-muted.credit.pull-right
+					if config "webmoneyImg"
+						a(href='http://passport.webmoney.ru/asp/certview.asp?wmid=409125647513' target='_blank')
+							img(src='/img/wm_attestat.png' alt='Аттестован WebMoney')
+						a(href='http://www.megastock.ru/' target='_blank')
+							img(src='/img/wm_accept.png' alt='www.megastock.ru')
+					if config "yandexMetrika"
+						+yandexMetrika
+					if config "liveInternet"
+						+liveInternet

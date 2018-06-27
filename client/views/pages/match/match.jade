@@ -1,0 +1,261 @@
+template(name='match')
+	.container
+		.row
+			.col-md-8
+				.row
+					.col-md-12
+						.page-header(style='border: 0; margin-bottom: 0')
+							h2.text-muted
+								| Матч №{{_id}}
+								small.pull-right.text-small
+									if $eq status 'inSearch'
+										| Создан 
+										span(style='text-transform: lowercase') {{getTime dateCreate}}
+									else if $eq status 'inGame'
+										| {{getTextGameStatus}} (начат 
+										span(style='text-transform: lowercase') {{getTime dateStarted}})
+									else if $eq status 'finished'
+										if aborted
+											| Отменен 
+										else
+											| Закончен 
+										span(style='text-transform: lowercase') {{getTime dateFinished}}
+				.row
+					.col-md-12
+						if preparation
+							if currentUser
+								if isMyMatch
+									.row
+										.col-md-12
+											.alert.alert-success(style='height: 65px')
+												h4.pull-left(style='height: 34px; line-height: 32px')
+													if membersReady
+														| Готовы: {{membersReady}} / {{realMembersCount}}
+													else
+														| Подготовка! Жмите кнопку справа
+													unless currentUserIsReady
+														| . У вас есть 30 секунд.
+												button#btn-ready.pull-right.btn.btn-default(disabled="{{#if currentUserIsReady}}true{{/if}}") Готов
+												unless currentUserIsReady
+													audio(src='/audio/time.mp3' autoplay loop)
+				.well.well-match
+					.row
+						.col-sm-5
+							.team-members
+								.list-group
+									.list-group-item.list-group-item-info.text-center(style='height: 54px; line-height: 32px;')
+										if good.winner
+											i.fa.fa-star
+										b RADIANT
+										if good.winner
+											i.fa.fa-star
+
+									each good.members
+										with getUser _id
+											if $eq ../../status 'inSearch'
+												a.list-group-item.list-group-item-default(href='/user/{{id}}' style='{{#if ../ready}}border: dashed 1px #31708f{{/if}}')
+													img(src='{{services.steam.avatar.small}}' alt='{{profile.name}}' style='border-radius: 50%')
+													| {{profile.name}}
+											else if $eq ../../status 'inGame'
+												a.list-group-item.list-group-item-default(href='/user/{{id}}' style='{{#if ../connected}}border: solid 1px #31708f{{/if}}')
+													img(src='{{services.steam.avatar.small}}' alt='{{profile.name}}' style='border-radius: 50%')
+													| {{profile.name}}
+											else
+												a.list-group-item.list-group-item-default(href='/user/{{id}}')
+													with ../../getMember _id
+														with getHero heroID
+															img(src='/img/heroes/{{_id}}.png' title='{{name}}' alt='{{name}}' style='height: 32px')
+													=profile.name
+													if ../../good.winner
+														span.text-success (+{{../../winMoney}} р.)
+													else if ../../good.looser
+														span.text-danger (-{{../../money}} р.)
+									if teamGoodHasMoreSlots
+										.text-center
+											if currentUser
+												if currentUser.currentMatch
+													a.list-group-item.list-group-item-default(style='height: 54px')
+														span(style='line-height: 32px') Слотов осталось: {{teamGoodLeftSlots}}
+												else
+													if currentUserHasMoney
+														a.btn-take-slot-good.list-group-item.list-group-item-default(href='#' style='height: 54px')
+															i.glyphicon.glyphicon-plus
+															span(style='line-height: 32px')  Занять слот ({{teamGoodLeftSlots}} осталось)
+													else
+														a.list-group-item.list-group-item-default(href='#' style='height: 54px')
+															i.glyphicon.glyphicon-plus
+															span(style='line-height: 32px')  Не хватает {{currentUserMoneyLeft}} р.
+											else
+												a.list-group-item.list-group-item-default(style='height: 54px')
+													span(style='line-height: 32px') Слотов осталось: {{teamGoodLeftSlots}}
+						.col-sm-2
+						.col-sm-5
+							.team-members
+								.list-group
+									.list-group-item.list-group-item-danger.text-center(style='height: 54px; line-height: 32px;')
+										if bad.winner
+											i.fa.fa-star
+										b DIRE
+										if bad.winner
+											i.fa.fa-star
+
+									each bad.members
+										with getUser _id
+											if $eq ../../status 'inSearch'
+												a.list-group-item.list-group-item-default(href='/user/{{id}}' style='{{#if ../ready}}border: dashed 1px #a94442{{/if}}')
+													img(src='{{services.steam.avatar.small}}' alt='{{profile.name}}' style='border-radius: 50%')
+													| {{profile.name}}
+											else if $eq ../../status 'inGame'
+												a.list-group-item.list-group-item-default(href='/user/{{id}}' style='{{#if ../connected}}border: solid 1px #a94442{{/if}}')
+													img(src='{{services.steam.avatar.small}}' alt='{{profile.name}}' style='border-radius: 50%')
+													=profile.name
+											else
+												a.list-group-item.list-group-item-default(href='/user/{{id}}')
+													with ../../getMember _id
+														with getHero heroID
+															img(src='/img/heroes/{{_id}}.png' title='{{name}}' alt='{{name}}' style='height: 32px')
+													=profile.name
+													if ../../bad.winner
+														span.text-success (+{{../../winMoney}} р.)
+													else if ../../bad.looser
+														span.text-danger (-{{../../money}} р.)
+									if teamBadHasMoreSlots
+										.text-center
+											if currentUser
+												if currentUser.currentMatch
+													a.list-group-item.list-group-item-default(style='height: 54px')
+														span(style='line-height: 32px') Слотов осталось: {{teamBadLeftSlots}}
+												else
+													if currentUserHasMoney
+														a.btn-take-slot-bad.list-group-item.list-group-item-default(href='#' style='height: 54px')
+															i.glyphicon.glyphicon-plus
+															span(style='line-height: 32px')  Занять слот ({{teamBadLeftSlots}} осталось)
+													else
+														a.list-group-item.list-group-item-default(href='#' style='height: 54px')
+															i.glyphicon.glyphicon-plus
+															span(style='line-height: 32px')  Не хватает {{currentUserMoneyLeft}} р.
+											else
+												a.list-group-item.list-group-item-default(style='height: 54px')
+													span(style='line-height: 32px') Слотов осталось: {{teamBadLeftSlots}}
+				.well.well-match-buttons
+					.row
+						.col-sm-offset-4.col-sm-4
+							if $eq status 'inSearch'
+								if isMyMatch
+									button.btn.btn-danger.btn-block.btn-leave-slot Выйти из матча
+							else if $eq status 'inGame'
+								if $eq gamestatus 'startingServer'
+									a.btn.btn-primary.btn-block(disabled) Запуск сервера...
+								else
+									if isMyMatch
+										a.btn.btn-primary.btn-block(href='steam://connect/{{server.numberIp}}:{{server.port}}') Подключиться
+									else
+										if tv_enable
+											a.btn.btn-primary.btn-block(href='steam://connect/{{server.numberIp}}:{{server.hltvPort}}') Смотреть TV
+										else
+											a.btn.btn-primary.btn-block(href='#' disabled) Трансляция отключена
+							else if $eq status 'finished'
+								if tv_enable
+									a.btn.btn-success.btn-block(href='http://demos.dota2comeback.com/{{_id}}.dem') Скачать запись
+								else
+									button.btn.btn-primary.btn-block(disabled) Трансляция отключена
+							if isInRole 'admin'
+								if $neq status 'finished'
+									button.btn.btn-danger.btn-remove.btn-block Удалить матч
+			.col-md-4
+				.row
+					.col-md-12(style='margin-top: 40px')
+						table.table.table-striped.table-bordered
+							tbody
+								tr
+									th.text-left
+										i.fa.fa-bullseye
+										| Мод
+									td.text-left=getTextMode
+								tr
+									th.text-left
+										i.fa.fa-users
+										| Тип
+									td.text-left=type
+								tr
+									th.text-left
+										i.fa.fa-rub
+										| Ставка
+									td.text-left
+										span.text-success {{money}} р.
+								if hasPassword
+									tr
+										th.text-left
+											i.fa.fa-lock
+											| Пароль
+										td.text-left
+											span.text-warning Установлен
+								tr
+									th.text-left
+										i.glyphicon.glyphicon-log-in
+										| IP сервера
+									td.text-left
+										a(href='steam://connect/{{server.numberIp}}:{{server.port}}') {{server.numberIp}}:{{server.port}}
+								tr
+									th.text-left
+										i.fa.fa-video-camera
+										| TV-трансляция
+									td.text-left
+										if tv_enable
+											span.text-success Включена
+										else
+											span.text-danger Выключена
+								tr
+									th.text-left
+										i.fa.fa-rebel
+										| Руны
+									td.text-left
+										if withoutRunes
+											span.text-danger Отключены
+										else
+											span.text-success Включены
+								tr
+									th.text-left
+										i.fa.fa-meh-o
+										| Нейтралы
+									td.text-left
+										if withoutNeutrals
+											span.text-danger Отключены
+										else
+											span.text-success Включены
+								if heroID
+									tr
+										th.text-left
+											i.fa.fa-star
+											| Герой
+										td.text-left
+											if heroID
+												=hero.name
+											else
+												| Не важно
+								tr
+									th.text-left
+										i.fa.fa-location-arrow
+										| Крипы
+									td.text-left
+										if creeps.top
+											| TOP 
+										if creeps.mid
+											| MID 
+										if creeps.bot
+											| BOT
+								if kills
+									tr
+										th.text-left
+											i.fa.fa-crosshairs
+											| Убийства
+										td.text-left=kills
+								if towers
+									tr
+										th.text-left
+											i.fa.fa-university
+											| Вышки
+										td.text-left=towers
+				.row
+					.col-md-12
+						+chat

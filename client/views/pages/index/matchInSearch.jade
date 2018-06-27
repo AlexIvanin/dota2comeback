@@ -1,0 +1,35 @@
+template(name='matchInSearch')
+	tr(style='cursor: pointer' onclick='Router.go("/match/{{_id}}")')
+		td
+			with getUser userId
+				a(href='/user/{{id}}')
+					img(height='32' src='{{services.steam.avatar.small}}' style='border-radius: 50%' alt='Аватар пользователя {{profile.name}}' title='Перейти в профиль {{profile.name}}')
+					|  {{profile.name}}
+		td.text-center
+			| {{money}} руб.
+		td.text-center {{realMembersCount}} / {{maxMembersCount}}
+		if hasParams
+			td.text-center
+				if heroID
+					a.label.label-success(href='#' data-toggle='tooltip' data-placement='top' title='{{hero.name}} пикнется автоматически') {{hero.name}}
+				if towers
+					a.label.label-danger(href='#' data-toggle='tooltip' data-placement='top' title='Количество вышек для победы') {{towers}}T
+				if kills
+					a.label.label-danger(href='#' data-toggle='tooltip' data-placement='top' title='Количество убийств для победы') {{kills}}K
+				if withoutRunes
+					a.label.label-primary(href='#' data-toggle='tooltip' data-placement='top' title='Без рун')
+						s R
+				if withoutNeutrals
+					a.label.label-primary(href='#' data-toggle='tooltip' data-placement='top' title='Без нейтралов')
+						s N
+				if hasPassword
+					a.label.label-warning(href='#' data-toggle='tooltip' data-placement='top' title='Игра с паролем')
+						i.fa.fa-lock
+				if tv_enable
+					a.label.label-info(href='#' data-toggle='tooltip' data-placement='top' title='TV-трансляция')
+						i.fa.fa-video-camera
+		else
+			td.text-center -
+
+		td.text-center=getTextMode
+		td.text-center {{getTime dateCreate}}

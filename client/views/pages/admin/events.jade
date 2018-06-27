@@ -1,0 +1,120 @@
+template(name='adminEvents')
+	if isInRole 'admin'
+		.container
+			.row
+				.col-sm-12
+					.page-header
+						h2 Управление
+							span.text-muted - журнал
+			.row
+				.col-sm-9
+					ul#eventsTabs.nav.nav-tabs
+						li.active
+							a(href='#tab-money' data-toggle='tab') Финансы
+						li
+							a(href='#tab-visits' data-toggle='tab') Посещения
+
+					.tab-content
+						#tab-money.tab-pane.fade.active.in
+							if payments.count
+								table.table.table-striped.table-bordered.table-hover.table-responsive
+									thead
+										tr
+											th.text-center Пользователь
+											th.text-center Сумма
+											th.text-center Способ оплаты
+											th.text-center Кошелек / Телефон
+											th.text-center Дата
+									tbody
+										each payments
+											tr
+												td.text-left
+													with getUser userId
+														a(href='/user/{{id}}')
+															img(height='32px' src='{{services.steam.avatar.small}}' style='border-radius: 50%')
+															|  {{profile.name}}
+												td.text-center
+													if isUnitpay
+														| {{toFixed params.profit 2}} руб.
+													else if isWebmoney
+														| {{toFixed params.LMI_PAYMENT_AMOUNT 2}} руб.
+													else if isRobokassa
+														| {{toFixed params.OutSum 2}} руб.
+												td.text-center
+													if isUnitpay
+														| Unitpay - {{paymentGetType}}
+													else if isWebmoney
+														| Webmoney
+													else if isRobokassa
+														| Robokassa
+												td.text-center
+													if isUnitpay
+														if params.purse
+															=params.purse
+														else
+															=params.phone
+															if $eq params.paymentType 'mc'
+																|  ({{paymentGetMobileOperator}})
+															else if $eq params.paymentType 'sms'
+																|  ({{paymentGetMobileOperator}})
+													else if isWebmoney
+														=params.LMI_PAYER_PURSE
+													else if isRobokassa
+														=params.PaymentMethod
+												td.text-center {{getTime date}}
+							else
+								br
+								br
+								br
+								br
+								br
+								br
+								br
+								br
+								center
+									h2.text-muted Финансовых операций нет
+
+						#tab-visits.tab-pane.fade.in
+							if visits.count
+								table.table.table-striped.table-bordered.table-hover.table-responsive
+									thead
+										tr
+											th.text-center Пользователь
+											th.text-center IP
+											th.text-center Браузер
+											th.text-center ОС
+											th.text-center Устройство
+											th.text-center Дата
+									tbody
+										each visits
+											tr
+												td.text-left
+													with getUser userId
+														a(href='/user/{{id}}')
+															img(height='32px' src='{{services.steam.avatar.small}}' style='border-radius: 50%')
+															|  {{profile.name}}
+												td.text-center=ip
+												td.text-center=userAgent.browser
+												td.text-center=userAgent.os
+												td.text-center
+													if userAgent.device
+														=userAgent.device
+													else
+														| -
+												td.text-center {{getTime date}}
+							else
+								br
+								br
+								br
+								br
+								br
+								br
+								br
+								br
+								center
+									h2.text-muted Посещений нет
+
+				.col-sm-3
+					+adminMenu
+	else
+		+forbidden

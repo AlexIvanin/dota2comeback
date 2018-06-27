@@ -1,0 +1,66 @@
+template(name='adminMoneyOut')
+	if isInRole 'admin'
+		.container
+			.row
+				.col-sm-12
+					.page-header
+						h2 Управление
+							span.text-muted - заявки на вывод
+			.row
+				.col-sm-9
+					if payOuts.count
+						table.table.table-bordered.table-hover.table-responsive.table-striped
+							thead
+								tr
+									th.text-center Пользователь
+									th.text-center Сумма
+									th.text-center Кошелек
+									th.text-center Дата
+									th.text-center Статус
+									th.text-center Опции
+							tbody
+								each payOuts
+									tr
+										td
+											with getUser userId
+												a(href='/user/{{id}}')
+													img(height='32px' src='{{services.steam.avatar.small}}' style='border-radius: 50%')
+													|  {{profile.name}}
+										td.text-center {{toFixed money 2}} руб.
+										td.text-center
+											if $eq purseType 'wm'
+												| WM - 
+											else if $eq purseType 'qiwi'
+												| QIWI - 
+											=purse
+										td.text-center {{getTime date}}
+										td.text-center
+											if $eq status 'wait'
+												span.text-warning В ожидании
+											else if $eq status 'payed'
+												span.text-success Выплачено
+											else if $eq status 'notpayed'
+												span.text-danger Отклонено
+										td.text-center
+											if $eq status 'wait'
+												button.btn.btn-xs.btn-danger.btn-decline-payout
+													i.glyphicon.glyphicon-remove
+												button.btn.btn-xs.btn-success.btn-accept-payout
+													i.glyphicon.glyphicon-ok
+											else
+												| -
+					else
+						center
+							br
+							br
+							br
+							br
+							br
+							br
+							br
+							br
+							h2.text-muted Заявок на вывод нет
+				.col-sm-3
+					+adminMenu
+	else
+		+forbidden

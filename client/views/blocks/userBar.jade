@@ -1,0 +1,26 @@
+template(name='userBar')
+	li
+		a(href='#' style='font-size: 16px; font-weight: bold;')
+			| {{toFixed currentUser.profile.money 2}}
+			i.fa.fa-rub
+
+	li.dropdown
+		a.dropdown-toggle(href='#' data-toggle='dropdown' style='padding: 9px')
+			img(src='{{currentUser.services.steam.avatar.small}}' alt='' style='border-radius: 50%')
+			=currentUser.profile.name
+			|  
+			i.caret
+		ul.dropdown-menu
+			li
+				a(href='/user/{{currentUser.id}}')
+					i.fa.fa-user
+					| Профиль
+			li
+				a(href='/user/{{currentUser.id}}/settings')
+					i.fa.fa-cog
+					| Настройки
+			li.divider
+			li
+				a#btn-logout(href='#')
+					i.fa.fa-sign-out
+					| Выйти

@@ -1,0 +1,1 @@
+Template.userBar.events 'click #btn-logout': -> Meteor.logout()

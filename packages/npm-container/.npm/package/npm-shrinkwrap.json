@@ -1,0 +1,46 @@
+{
+  "dependencies": {
+    "diskspace": {
+      "version": "0.1.7"
+    },
+    "rcon": {
+      "version": "0.2.1"
+    },
+    "ssh2": {
+      "version": "0.3.6",
+      "dependencies": {
+        "readable-stream": {
+          "version": "1.0.27-1",
+          "dependencies": {
+            "core-util-is": {
+              "version": "1.0.1"
+            },
+            "isarray": {
+              "version": "0.0.1"
+            },
+            "string_decoder": {
+              "version": "0.10.31"
+            },
+            "inherits": {
+              "version": "2.0.1"
+            }
+          }
+        },
+        "streamsearch": {
+          "version": "0.1.2"
+        },
+        "asn1": {
+          "version": "0.2.1"
+        }
+      }
+    },
+    "useragent": {
+      "version": "2.1.5",
+      "dependencies": {
+        "lru-cache": {
+          "version": "2.2.4"
+        }
+      }
+    }
+  }
+}

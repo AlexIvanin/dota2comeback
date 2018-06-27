@@ -1,0 +1,217 @@
+template(name='adminSettings')
+	if isInRole 'admin'
+		.container
+			.row
+				.col-sm-12
+					.page-header
+						h2 Управление
+							span.text-muted - настройки
+			.row
+				.col-sm-9
+					ul#settingsTabs.nav.nav-tabs
+						li.active
+							a(href='#tab-main' data-toggle='tab') Общие
+						li
+							a(href='#tab-matches' data-toggle='tab') Матчи
+						li
+							a(href='#tab-servers' data-toggle='tab') Сервера
+						li
+							a(href='#tab-money' data-toggle='tab') Финансы
+						li
+							a(href='#tab-chat' data-toggle='tab') Чат
+						li
+							a(href='#tab-news' data-toggle='tab') Новости
+						li
+							a(href='#tab-groups' data-toggle='tab') Группы
+
+					.tab-content
+						#tab-main.tab-pane.fade.active.in
+							.well
+								.form-horizontal
+									fieldset
+										legend Переменные
+										.form-group
+											label.col-sm-4.control-label(for='#inputTitle') Название сайта
+											.col-sm-5
+												input#inputTitle.form-control(placeholder='Название, отображаемое в заголовке' value='{{config "title"}}')
+										.form-group
+											label.col-sm-4.control-label(for='#inputBrand') Название в меню
+											.col-sm-5
+												input#inputBrand.form-control(placeholder='Название в верхнем навбаре' value='{{config "brand"}}')
+										.form-group
+											label.col-sm-4.control-label(for='#inputFooter') Текст в футере
+											.col-sm-5
+												input#inputFooter.form-control(placeholder='Текст, отображаемый в футере' value='{{config "footer"}}')
+									fieldset
+										legend Блоки
+										.form-group
+											.col-sm-offset-4.col-sm-5
+												input#setWebmoney(type='checkbox' checked='{{#if config "webmoneyImg"}}true{{/if}}')
+												label(for='setWebmoney') WebMoney
+										.form-group
+											.col-sm-offset-4.col-sm-5
+												input#setYandexMetrika(type='checkbox' checked='{{#if config "yandexMetrika"}}true{{/if}}')
+												label(for='setYandexMetrika') Яндекс метрика
+										.form-group
+											.col-sm-offset-4.col-sm-5
+												input#setLiveinternet(type='checkbox' checked='{{#if config "liveInternet"}}true{{/if}}')
+												label(for='setLiveinternet') LiveInternet
+									fieldset
+										legend Ключи
+										.form-group
+											label.col-sm-4.control-label(for='#inputSteamApiKey') Steam Web API
+											.col-sm-5
+												input#inputSteamApiKey.form-control(placeholder='Ключ Steam Web Api' value='{{config "steamApiKey"}}')
+										.form-group
+											label.col-sm-4.control-label(for='#inputUnitpayKey') Unitpay API
+											.col-sm-5
+												input#inputUnitpayKey.form-control(placeholder='{{#if config "unitpayOn"}}Unitpay secret code{{else}}Система Unitpay отключена{{/if}}' value='{{#if config "unitpayOn"}}{{config "unitpayKey"}}{{/if}}' disabled='{{#unless config "unitpayOn"}}true{{/unless}}')
+										.form-group
+											label.col-sm-4.control-label(for='#inputWebmoneyKey') WM secret code
+											.col-sm-5
+												input#inputWebmoneyKey.form-control(placeholder='{{#if config "webmoneyOn"}}Webmoney secret code{{else}}Система WebMoney отключена{{/if}}' value='{{#if config "webmoneyOn"}}{{config "webmoneyKey"}}{{/if}}' disabled='{{#unless config "webmoneyOn"}}true{{/unless}}')
+										.form-group
+											label.col-sm-4.control-label(for='#inputWebmoneyPurse') WebMoney кошелек
+											.col-sm-5
+												input#inputWebmoneyPurse.form-control(placeholder='{{#if config "webmoneyOn"}}Webmoney-кошелек{{else}}Система WebMoney отключена{{/if}}' value='{{#if config "webmoneyOn"}}{{config "webmoneyPurse"}}{{/if}}' disabled='{{#unless config "webmoneyOn"}}true{{/unless}}')
+										.form-group
+											label.col-sm-4.control-label(for='#inputRobokassaLogin') Robokassa логин
+											.col-sm-5
+												input#inputRobokassaLogin.form-control(placeholder='{{#if config "robokassaOn"}}Robokassa логин{{else}}Robokassa отключена{{/if}}' value='{{#if config "robokassaOn"}}{{config "robokassaLogin"}}{{/if}}' disabled='{{#unless config "robokassaOn"}}true{{/unless}}')
+										.form-group
+											label.col-sm-4.control-label(for='#inputRobokassaKey1') Robokassa пароль №1
+											.col-sm-5
+												input#inputRobokassaKey1.form-control(placeholder='{{#if config "robokassaOn"}}Robokassa пароль №1 {{else}}Robokassa отключена{{/if}}' value='{{#if config "robokassaOn"}}{{config "robokassaKey1"}}{{/if}}' disabled='{{#unless config "robokassaOn"}}true{{/unless}}')
+										.form-group
+											label.col-sm-4.control-label(for='#inputRobokassaKey2') Robokassa пароль №2
+											.col-sm-5
+												input#inputRobokassaKey2.form-control(placeholder='{{#if config "robokassaOn"}}Robokassa пароль №2 {{else}}Robokassa отключена{{/if}}' value='{{#if config "robokassaOn"}}{{config "robokassaKey2"}}{{/if}}' disabled='{{#unless config "robokassaOn"}}true{{/unless}}')
+
+						#tab-matches.tab-pane.fade
+
+						#tab-servers.tab-pane.fade
+							.well
+								.form-horizontal
+									fieldset
+										legend Переменные
+										.form-group
+											label.col-sm-4.control-label(for='#inputServerIP') IP
+											.col-sm-5
+												input#inputServerIP.form-control(placeholder='IP физического сервера для запуска Dota2-серверов' value='{{config "serverIP"}}')
+										.form-group
+											label.col-sm-4.control-label(for='#inputLogAddress') LogAddress
+											.col-sm-5
+												input#inputLogAddress.form-control(placeholder='127.0.0.1:27000' value='{{#if config "logSocketIP"}}{{config "logSocketIP"}}:{{config "logSocketPort"}}{{/if}}')
+										.form-group
+											label.col-sm-4.control-label(for='#inputServerLoginSSH') SSH Порт
+											.col-sm-5
+												input#inputServerPortSSH.form-control(placeholder='SSH-порт физического сервера' value='{{config "serverPortSSH"}}')
+										.form-group
+											label.col-sm-4.control-label(for='#inputServerLoginSSH') SSH Логин
+											.col-sm-5
+												input#inputServerLoginSSH.form-control(placeholder='SSH-логин физического сервера' value='{{config "serverLoginSSH"}}')
+										.form-group
+											label.col-sm-4.control-label(for='#inputServerPasswordSSH') SSH Пароль
+											.col-sm-5
+												input#inputServerPasswordSSH.form-control(placeholder='SSH пароль физического сервера' value='{{config "serverPasswordSSH"}}')
+										.form-group
+											label.col-sm-4.control-label(for='#inputServerPath') Папка Dota2
+											.col-sm-5
+												input#inputServerPath.form-control(placeholder='Путь к папке с dota2-сервером' value='{{config "serverPath"}}')
+										.form-group
+											label.col-sm-4.control-label(for='#inputServerPath') RCON Пароль
+											.col-sm-5
+												input#inputServerRcon.form-control(placeholder='rcon_password, для отправки команд на сервер' value='{{config "serverRcon"}}')
+										.form-group
+											.col-sm-offset-4.col-sm-5
+												button.btn-save-server-settings.btn.btn-info.btn-block Сохранить изменения
+
+						#tab-money.tab-pane.fade
+							.well
+								.form-horizontal
+									fieldset
+										legend Типы оплаты
+										.form-group
+											.col-sm-offset-3.col-sm-5
+												input#setUnitpayOn(type='checkbox' checked='{{#if config "unitpayOn"}}true{{/if}}')
+												label(for='setUnitpayOn') Unitpay
+										.form-group
+											.col-sm-offset-3.col-sm-5
+												input#setWebmoneyOn(type='checkbox' checked='{{#if config "webmoneyOn"}}true{{/if}}')
+												label(for='setWebmoneyOn') Webmoney
+										.form-group
+											.col-sm-offset-3.col-sm-5
+												input#setRobokassaOn(type='checkbox' checked='{{#if config "robokassaOn"}}true{{/if}}')
+												label(for='setRobokassaOn') Robokassa
+									fieldset
+										legend Проценты
+										.form-group
+											label.col-sm-3.control-label(for='#inputPercent10r') 10-25р.
+											.col-sm-5
+												.input-group
+													input#inputPercent10r.form-control(type='number' min='0' max='100' placeholder='Проценты при ставке 10-25р.' value='{{config "percent10r"}}')
+													span.input-group-addon %
+										.form-group
+											label.col-sm-3.control-label(for='#inputPercent25r') 25-100р.
+											.col-sm-5
+												.input-group
+													input#inputPercent25r.form-control(type='number' min='0' max='100' placeholder='Проценты при ставке 25-100р.' value='{{config "percent25r"}}')
+													span.input-group-addon %
+										.form-group
+											label.col-sm-3.control-label(for='#inputPercent100r') 100-300р.
+											.col-sm-5
+												.input-group
+													input#inputPercent100r.form-control(type='number' min='0' max='100' placeholder='Проценты при ставке 100-300р.' value='{{config "percent100r"}}')
+													span.input-group-addon %
+										.form-group
+											label.col-sm-3.control-label(for='#inputPercent300r') 300р.+
+											.col-sm-5
+												.input-group
+													input#inputPercent300r.form-control(type='number' min='0' max='100' placeholder='Проценты при ставке 300р.+' value='{{config "percent300r"}}')
+													span.input-group-addon %
+										.form-group
+											label.col-sm-3.control-label(for='#inputMinMoney') Минимальная ставка
+											.col-sm-5
+												.input-group
+													input#inputMinMoney.form-control(type='number' min='0' placeholder='Минимальная сумма ставки' value='{{config "minMoney"}}')
+													span.input-group-addon
+														i.fa.fa-rub
+									fieldset
+										legend Пополнение / вывод
+										.form-group
+											.col-sm-offset-3.col-sm-5
+												input#setAllowMoneyIn(type='checkbox' checked='{{#if config "allowMoneyIn"}}true{{/if}}')
+												label(for='setAllowMoneyIn') Разрешить пополнение средств
+										.form-group
+											.col-sm-offset-3.col-sm-5
+												input#setAllowMoneyOut(type='checkbox' checked='{{#if config "allowMoneyOut"}}true{{/if}}')
+												label(for='setAllowMoneyOut') Разрешить вывод средств
+										.form-group
+						#tab-chat.tab-pane.fade
+
+						#tab-news.tab-pane.fade
+
+						#tab-groups.tab-pane.fade
+							.row
+								.col-sm-3
+									h2 Группы:
+								.col-sm-9
+									if roles.count
+										br
+										.panel-group(id='roles-panels')
+											each roles
+												.panel.panel-default
+													.panel-heading
+														h4.panel-title
+															a(data-toggle='collapse' data-parent='#roles-panels' href='#{{_id}}')=name
+													.panel-collapse.collapse(id='{{_id}}')
+														.panel-body
+															| Тут права
+									else
+										center
+											h2.text-muted Групп нет
+											br
+				.col-sm-3
+					+adminMenu
+	else
+		+forbidden

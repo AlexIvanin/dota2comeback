@@ -1,0 +1,41 @@
+template(name='adminUsers')
+	if isInRole 'admin'
+		.container
+			.row
+				.col-sm-12
+					.page-header
+						h2 Управление
+							span.text-muted - пользователи
+			.row
+				.col-sm-9
+					table.table.table-bordered.table-hover.table-striped.table-responsive
+						thead
+							tr
+								th.text-center ID
+								th.text-center Пользователь
+								th.text-center Деньги
+								th.text-center Email
+								th.text-center Последний визит
+						tbody
+							each users
+								tr(style='cursor: pointer' onclick='Router.go("/user/{{id}}")')
+									td.text-center=id
+									td.text-left
+										a(href='/user/{{id}}')
+											img(height='32px' src='{{services.steam.avatar.small}}' style='border-radius: 50%')
+											|  {{profile.name}}
+									td.text-center {{toFixed profile.money 2}} руб.
+									td.text-center
+										if profile.email
+											=profile.email
+										else
+											| -
+									td.text-center
+										if status.online
+											span.text-info Онлайн
+										else
+											span.text-muted {{getTime lastVisit}}
+				.col-sm-3
+					+adminMenu
+	else
+		+forbidden

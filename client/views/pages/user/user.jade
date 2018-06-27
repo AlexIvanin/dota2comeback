@@ -1,0 +1,604 @@
+template(name='user')
+	.container
+		.row
+			.col-sm-3
+				.row
+					.col-sm-12
+						a.thumbnail(href='/user/{{id}}')
+							img.img-responsive(style='width: 100%' src='{{services.steam.avatar.full}}' alt='{{profile.name}}')
+
+						if currentUser
+							if $neq _id currentUser._id
+								hr
+								button#pm.btn.btn-primary.btn-block(title='Отправить сообщение')
+									span.glyphicon.glyphicon-envelope
+									|  Сообщение
+								if isMyFriend _id
+									button#deleteFriend.btn.btn-danger.btn-block(title='Удалить из списка друзей')
+										span.glyphicon.glyphicon-remove
+										|  Удалить из друзей
+								else
+									if isRequesterFriend _id
+										button#acceptRequestFriend.btn.btn-info.btn-block(title='Подтвердить заявку в друзья')
+											span.glyphicon.glyphicon-ok
+											|  Принять заявку
+										button#declineRequestFriend.btn.btn-danger.btn-block(title='Отклонить заявку в друзья')
+											span.glyphicon.glyphicon-remove
+											|  Отклонить заявку
+									else
+										if isAccepterFriend _id
+											button#abortRequestFriend.btn.btn-warning.btn-block(title='Отменить заявку в друзья')
+												span.glyphicon.glyphicon-remove
+												|  Отменить заявку
+										else
+											button#addFriend.btn.btn-success.btn-block(title='Добавить пользователя в список друзей')
+												span.glyphicon.glyphicon-plus-sign
+												|  Добавить в друзья
+								hr
+				if $eq currentUser._id _id
+					.row
+						.col-md-12
+							.well.text-center
+								h3.text-info(style='margin: 0px 0px 20px 0px') {{toFixed profile.money 2}} РУБ
+								if config 'allowMoneyIn'
+									button.btn.btn-success.btn-block(data-toggle='modal' data-target='#payModal')
+										i.glyphicon.glyphicon-import
+										|  Пополнить
+								else
+									button.btn.btn-success.btn-block(data-toggle='modal' data-target='#payModal' disabled)
+										i.glyphicon.glyphicon-import
+										|  Пополнить
+								if config 'allowMoneyOut'
+									button.btn.btn-info.btn-block(data-toggle='modal' data-target='#moneyOutModal')
+										i.glyphicon.glyphicon-export
+										|  Вывести
+								else
+									button.btn.btn-info.btn-block(data-toggle='modal' data-target='#moneyOutModal' disabled)
+										i.glyphicon.glyphicon-export
+										|  Вывести
+
+							#moneyOutModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='moneyOutModalLabel')
+								.modal-dialog
+									.modal-content
+										.modal-header
+											button.close(type='button', data-dismiss='modal')
+												span(aria-hidden='true') ×
+												span.sr-only Закрыть
+											h4#moneyOutModalLabel.modal-title Вывод средств
+										.modal-body
+											.row
+												.col-sm-12
+													if allowPayOut
+														.alert.alert-info Минимальная сумма вывода на WebMoney - 50 рублей, QIWI - 200 рублей (1.9% комиссия).
+														.form-horizontal
+															.form-group
+																label.control-label.col-sm-4(for='selectedPurse') Кошелек
+																.col-sm-8
+																	select#selectedPurse.form-control
+																		if profile.wm
+																			if hasMoneyWM
+																				option(value='wm') WebMoney - {{profile.wm}}
+																			else
+																				option(value='wm' disabled) WebMoney - не достаточно средств
+																		else
+																			option(value='wm' disabled) WebMoney - Заполните кошелек в настройках
+
+																		if profile.qiwi
+																			if hasMoneyQIWI
+																				option(value='wm') QIWI - {{profile.qiwi}}
+																			else
+																				option(value='wm' disabled) QIWI - не достаточно средств
+																		else
+																			option(value='qiwi' disabled) QIWI - Заполните кошелек в настройках
+															.form-group
+																label.control-label.col-sm-4(for='selectedMoneyOut') Сумма
+																.col-sm-8
+																	.input-group
+																		if selectedPurse
+																			input#selectedMoneyOut.form-control(type='number' value='{{#if $eq selectedPurse "wm"}}50{{else}}{{#if $eq selectedPurse "qiwi"}}200{{/if}}{{/if}}' min='{{#if $eq selectedPurse "wm"}}50{{else}}{{#if $eq selectedPurse "qiwi"}}200{{/if}}{{/if}}' max='{{profile.money}}' placeholder='Введите сумму')
+																		else
+																			input#selectedMoneyOut.form-control(type='number' value='{{#if $eq selectedPurse "wm"}}50{{else}}{{#if $eq selectedPurse "qiwi"}}200{{/if}}{{/if}}' min='{{#if $eq selectedPurse "wm"}}50{{else}}{{#if $eq selectedPurse "qiwi"}}200{{/if}}{{/if}}' max='{{profile.money}}' placeholder='Введите сумму' disabled)
+																		span.input-group-addon руб.
+																	if $eq selectedPurse 'qiwi'
+																		span Спишется {{toFixed selectedMoneyOutQiwi 2}} рублей с учетом комиссии
+													else
+														.alert.alert-warning Вы не можете выводить средства, чаще, чем раз в 2 недели. Следующий вывод средств возможен {{getTimeFromNow payOutTimeLeft}}.
+										.modal-footer
+											button.btn.btn-default(data-dismiss='modal') Закрыть
+											if allowPayOut
+												if selectedMoneyValid
+													if selectedPurse
+														button.btn.btn-primary.btn-pay-out Создать заявку на вывод
+													else
+														button.btn.btn-primary.btn-pay-out(disabled) Создать заявку на вывод
+												else
+													button.btn.btn-primary.btn-pay-out(disabled) Неправильная сумма
+							#payModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='payModalLabel')
+								.modal-dialog
+									.modal-content
+										.modal-header
+											button.close(type='button', data-dismiss='modal')
+												span(aria-hidden='true') ×
+												span.sr-only Закрыть
+											h4#payModalLabel.modal-title Пополнение счета
+										.modal-body
+											.row
+												.col-sm-12
+													if config "webmoneyOn"
+														.row
+															.col-sm-5
+																img.img-responsive(src='/img/wm.png' alt='WebMoney')
+															form#webmoneyForm.col-sm-7(action='https://merchant.webmoney.ru/lmi/payment.asp' method='POST')
+																input(type='hidden' name='LMI_PAYMENT_AMOUNT' value='{{selectedMoneyWebmoney}}')
+																input(type='hidden' name='LMI_PAYMENT_NO' value='{{currentUser.id}}')
+																input(type='hidden' name='LMI_PAYMENT_DESC_BASE64' value='0J/QvtC/0L7Qu9C90LXQvdC40LUg0LHQsNC70LDQvdGB0LA=')
+																input(type='hidden' name='LMI_PAYEE_PURSE' value='{{config "webmoneyPurse"}}')
+
+																.form-group
+																	label.control-label(for='selectedMoneyWebmoney') Сумма
+																	.input-group
+																		input#selectedMoneyWebmoney.form-control(type='number' min='0' placeholder='Введите сумму')
+																		span.input-group-addon руб.
+																.form-group
+																	if selectedMoneyWebmoney
+																		input.btn.btn-primary.btn-block(type='submit' value='Пополнить')
+																	else
+																		button.btn.btn-primary.btn-block(disabled) Введите сумму
+													if config "robokassaOn"
+														hr
+														.row
+															.col-sm-5
+																br
+																img.img-responsive(src='/img/robokassa.png' alt='Robokassa')
+															.col-sm-7
+																.form-group
+																	label.control-label(for='selectedMoneyRobokassa') Сумма
+																	.input-group
+																		input#selectedMoneyRobokassa.form-control(type='number' min='0' placeholder='Введите сумму')
+																		span.input-group-addon руб.
+																.form-group
+																	if selectedMoneyRobokassa
+																		button#robokassaGetLink.btn.btn-primary.btn-block Пополнить
+																	else
+																		button.btn.btn-primary.btn-block(disabled) Введите сумму
+													if config "unitpayOn"
+														hr
+														.row
+															.col-sm-5
+																img.img-responsive(src='/img/unitpay.png' alt='Unitpay' style='background: #fff')
+															.col-sm-7
+																.form-group
+																	label.control-label(for='selectedMoneyUnitpay') Сумма
+																	.input-group
+																		input#selectedMoneyUnitpay.form-control(type='number' min='0' placeholder='Введите сумму')
+																		span.input-group-addon руб.
+																.form-group
+																	if selectedMoneyUnitpay
+																		a.btn.btn-primary.btn-block(href='http://unitpay.ru/pay/6904-8c09b?sum={{selectedMoneyUnitpay}}&account={{currentUser.id}}&desc=Пополнение+баланса') Пополнить
+																	else
+																		button.btn.btn-primary.btn-block(disabled) Введите сумму
+										.modal-footer
+											button.btn.btn-default(data-dismiss='modal') Закрыть
+					.row
+						.col-md-12
+							.list-group
+								a.list-group-item(href='/user/{{id}}/settings')
+									i.glyphicon.glyphicon-cog
+									|  Настройки
+				else if isInRole 'admin'
+					.row
+						.col-md-12
+							.well.text-center
+								h3.text-info {{toFixed profile.money 2}} РУБ
+					.row
+						.col-md-12
+							.list-group
+								a.list-group-item(href='/user/{{id}}/settings')
+									i.glyphicon.glyphicon-cog
+									|  Настройки
+			.col-sm-9
+				.row
+					.col-md-12
+						.page-header(style='margin-top: 0')
+							h1(style='margin: 0')
+								=profile.name
+								small.small-text.pull-right
+									if status.online
+										| online
+									else
+										| Был в сети 
+										span(style='text-transform: lowercase') {{getTime lastVisit}}
+				.row
+					.col-sm-7
+						.row
+							.col-md-6.text-center
+								h2
+									span.text-success {{toFixed profile.rating.one.score 0}}
+									|  / 
+									span.text-info {{toFixed profile.rating.five.score 0}}
+								span.text-muted Рейтинг 1x1/5x5
+							.col-md-6.text-center
+								h2
+									if profile.stats.matches.count
+										span.text-success
+											if profile.stats.matches.wins
+												=profile.stats.matches.wins
+											else
+												| -
+										|  / 
+										span.text-danger
+											if profile.stats.matches.loses
+												=profile.stats.matches.loses
+											else
+												| -
+									else
+										span.text-info -
+								span.text-muted Матчи
+						.row
+							.col-md-12
+								hr
+								table.table.table-striped.table-bordered
+									tbody
+										tr
+											th.text-left Место
+											td.text-left
+												if profile.rating.place
+													=profile.rating.place
+												else
+													span.text-muted Не определено
+										tr
+											th.text-left Группа
+											td.text-left
+												if currentRole 'admin'
+													span.label.label-danger ADMIN
+												else if currentRole 'moderator'
+													span.label.label-warning MODERATOR
+												else if currentRole 'streamer'
+													span.label.label-success STREAMER
+												else
+													span.label.label-primary USER
+										tr
+											th.text-left ID:
+											td.text-left= id
+										tr
+											th.text-left SteamID:
+											td.text-left
+												a(href='http://steamcommunity.com/profiles/{{services.steam.id}}/' title='Перейти на страницу steam-аккаунта')= services.steam.steamID2
+										tr
+											th.text-left Регистрация:
+											td.text-left {{getTime createdAt}}
+
+					.col-sm-5
+						.row
+							.col-sm-12
+								.panel.panel-default
+									.panel-heading Друзья
+										span.pull-right=friends.count
+									.panel-body
+										.row
+											.col-sm-12.text-center(style='max-height: 169px; overflow-y: scroll;')
+												if friends.count
+													each friends
+														a.thumbnail(href='/user/{{id}}' style='width: 42px; display: inline-block; margin: 5px; border-radius: 50%')
+															img(src='{{services.steam.avatar.small}}' alt='Аватар пользователя {{profile.name}}' title='Перейти в профиль {{profile.name}}' style='border-radius: 50%')
+												else
+													.row
+														.col-md-12.text-center
+															br
+															h3.text-muted Пока нет друзей
+															br
+															br
+						.row
+							.col-sm-12
+								.panel.panel-default
+									.panel-heading Используемые герои
+									.panel-body
+										if favoriteHeroes
+											.row
+										else
+											.row
+												.col-md-12.text-center
+													br
+													h3.text-muted Не определено
+													br
+													br
+				.row
+					.col-md-12
+						ul#userTabs.nav.nav-tabs
+							li.active
+								a(href='#tab-matches' data-toggle='tab') Матчи
+							if $eq currentUser._id _id
+								li
+									a(href='#tab-visits' data-toggle='tab') Визиты
+							else if isInRole 'admin'
+								li
+									a(href='#tab-visits' data-toggle='tab') Визиты
+
+							if $eq currentUser._id _id
+								li
+									a(href='#tab-payments' data-toggle='tab') Пополнения
+							else if isInRole 'admin'
+								li
+									a(href='#tab-payments' data-toggle='tab') Пополнения
+
+							if $eq currentUser._id _id
+								li
+									a(href='#tab-payOuts' data-toggle='tab') Выводы
+							else if isInRole 'admin'
+								li
+									a(href='#tab-payOuts' data-toggle='tab') Выводы
+
+							if $eq currentUser._id _id
+								li
+									a(href='#tab-tickets' data-toggle='tab') Тикеты
+							else if isInRole 'admin'
+								li
+									a(href='#tab-tickets' data-toggle='tab') Тикеты
+
+							if $eq currentUser._id _id
+								li
+									a(href='#tab-refs' data-toggle='tab') Рефералы
+							else if isInRole 'admin'
+								li
+									a(href='#tab-refs' data-toggle='tab') Рефералы
+						.tab-content
+							#tab-matches.tab-pane.fade.active.in
+								if matches.count
+									table.table.table-striped.tabled-bordered.table-hover.table-responsive
+										thead
+											tr
+												th.text-center Результат
+												th.text-center Герой
+												th.text-center Тип
+												th.text-center Опции
+												th.text-center Мод
+												th.text-center Дата
+										tbody
+											each matches
+												tr(style='cursor: pointer' onclick='Router.go("/match/{{_id}}")')
+													td.text-center
+														if isMemberWinner ../_id
+															span.text-success Выиграл {{winMoney}} руб.
+														else
+															span.text-danger Проиграл {{money}} руб.
+													td.text-center
+														with getMember ../_id
+															if heroID
+																img(src='/img/heroes/{{heroID}}.png' alt='' style='height: 35px')
+															else
+																| - 
+													td.text-center=type
+													if hasParams
+														td.text-center
+															if towers
+																a.label.label-danger(href='#' data-toggle='tooltip' data-placement='top' title='Количество вышек для победы') {{towers}}T
+															if kills
+																a.label.label-danger(href='#' data-toggle='tooltip' data-placement='top' title='Количество сметрей для победы') {{kills}}K
+															if withoutRunes
+																a.label.label-primary(href='#' data-toggle='tooltip' data-placement='top' title='Без рун')
+																	s R
+															if withoutNeutrals
+																a.label.label-primary(href='#' data-toggle='tooltip' data-placement='top' title='Без нейтралов')
+																	s N
+															if hasPassword
+																a.label.label-warning(href='#' data-toggle='tooltip' data-placement='top' title='Игра с паролем')
+																	i.fa.fa-lock
+															if tv_enable
+																a.label.label-info(href='#' data-toggle='tooltip' data-placement='top' title='TV-трансляция')
+																	i.fa.fa-video-camera
+													else
+														td.text-center -
+													td.text-center=getTextMode
+													td.text-center {{getTime dateFinished}}
+								else
+									.text-center
+										br
+										br
+										br
+										br
+										br
+										h2.text-muted Нет сыгранных матчей
+							if $eq currentUser._id _id
+								+tabsVisits
+							else if isInRole 'admin'
+								+tabsVisits
+							if $eq currentUser._id _id
+								+tabsPayments
+							else if isInRole 'admin'
+								+tabsPayments
+							if $eq currentUser._id _id
+								+tabsPayOuts
+							else if isInRole 'admin'
+								+tabsPayOuts
+							if $eq currentUser._id _id
+								+tabsTickets
+							else if isInRole 'admin'
+								+tabsTickets
+							if $eq currentUser._id _id
+								+tabsRefs
+							else if isInRole 'admin'
+								+tabsRefs
+
+template(name='tabsVisits')
+	#tab-visits.tab-pane.fade
+		if visits.count
+			table.table.table-striped.table-bordered.table-hover.table-responsive
+				thead
+					tr
+						th.text-center IP
+						th.text-center Браузер
+						th.text-center ОС
+						th.text-center Устройство
+						th.text-center Дата
+				tbody
+					each visits
+						tr
+							td.text-center=ip
+							td.text-center=userAgent.browser
+							td.text-center=userAgent.os
+							td.text-center
+								if userAgent.device
+									=userAgent.device
+								else
+									| -
+							td.text-center {{getTime date}}
+		else
+			.text-center
+				br
+				br
+				br
+				br
+				br
+				h2.text-muted Пока нет посещений
+
+template(name='tabsPayments')
+	#tab-payments.tab-pane.fade
+		if payments.count
+			table.table.table-striped.table-bordered.table-hover.table-responsive
+				thead
+					tr
+						th.text-center Сумма
+						th.text-center Способ оплаты
+						th.text-center Кошелек / Телефон
+						th.text-center Дата
+				tbody
+					each payments
+						tr
+							td.text-center
+								if isUnitpay
+									| {{toFixed params.profit 2}} руб.
+								else if isWebmoney
+									| {{toFixed params.LMI_PAYMENT_AMOUNT 2}} руб.
+								else if isRobokassa
+									| {{toFixed params.OutSum 2}} руб.
+							td.text-center
+								if isUnitpay
+									| Unitpay - {{paymentGetType}}
+								else if isWebmoney
+									| Webmoney
+								else if isRobokassa
+									| Robokassa
+							td.text-center
+								if isUnitpay
+									if params.purse
+										=params.purse
+									else
+										=params.phone
+										if $eq params.paymentType 'mc'
+											|  ({{paymentGetMobileOperator}})
+										else if $eq params.paymentType 'sms'
+											|  ({{paymentGetMobileOperator}})
+								else if isWebmoney
+									=params.LMI_PAYER_PURSE
+								else if isRobokassa
+									=params.PaymentMethod
+							td.text-center {{getTime date}}
+		else
+			.text-center
+				br
+				br
+				br
+				br
+				br
+				h2.text-muted Нет пополнений счета
+
+template(name='tabsPayOuts')
+	#tab-payOuts.tab-pane.fade
+		if payOuts.count
+			table.table.table-striped.table-bordered.table-hover.table-responsive
+				thead
+					tr
+						th.text-center Сумма
+						th.text-center Кошелек / номер счета
+						th.text-center Дата
+						th.text-center Статус
+				tbody
+					each payOuts
+						tr
+							td.text-center {{toFixed money 2}} руб.
+							td.text-center=purse
+							td.text-center {{getTime date}}
+							td.text-center
+								if $eq status 'wait'
+									span.text-warning В процессе
+								else if $eq status 'payed'
+									span.text-success Выплачено
+								else if $eq status 'notpayed'
+									span.text-danger Отклонено
+										if reason
+											| ({{reason}})
+		else
+			.text-center
+				br
+				br
+				br
+				br
+				br
+				h2.text-muted Нет выводов средств
+
+template(name='tabsTickets')
+	#tab-tickets.tab-pane.fade
+		if tickets.count
+			table.table.table-striped.table-bordered.table-hover.table-responsive
+				thead
+					tr
+						th.text-center ID
+						th.text-center Описание
+						th.text-center Срочность
+						th.text-center Дата
+						th.text-center Статус
+				tbody
+					each tickets
+						tr(style='cursor: pointer' onclick='Router.go("{{#if isInRole "admin"}}/admin/tickets/{{else}}/user/{{../id}}/tickets/{{/if}}{{_id}}")')
+							td.text-center=_id
+							td.text-center=title
+							td.text-center
+								if $eq urgency '1' 
+									.label.label-success Низкая
+								else if $eq urgency '2'
+									.label.label-warning Средняя
+								else if $eq urgency '3'
+									.label.label-danger Высокая
+							td.text-center {{getTime date}}
+							td.text-center
+								if closed
+									span.text-muted Закрыт
+								else
+									span.text-success На рассмотрении
+		else
+			.text-center
+				br
+				br
+				br
+				br
+				br
+				h2.text-muted Нет тикетов
+				if $eq currentUser._id _id
+					br
+					.text-center
+						a.btn.btn-info(href='/contact') Новый тикет
+
+template(name='tabsRefs')
+	#tab-refs.tab-pane.fade
+		if referrals.count
+			table.table.table-striped.table-bordered.table-hover.table-responsive
+				thead
+					tr
+						th.text-center Пользователь
+						th.text-center Дата регистрации
+				tbody
+					each referrals
+						tr
+							td.text-center
+								a(href='/user/{{id}}')
+									img(height='32' alt='Аватар пользователя {{profile.name}}' title='Перейти в профиль {{profile.name}}' src='{{services.steam.avatar.small}}' style='border-radius: 50%')
+									=profile.name
+							td.text-center {{getTime createdAt}}
+		else
+			.text-center
+				br
+				br
+				br
+				br
+				br
+				h2.text-muted Рефералов пока нет

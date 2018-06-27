@@ -1,0 +1,37 @@
+template(name='noveltyEditModal')
+	#noveltyEditModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='noveltyEditLabel' aria-hidden='true')
+		.modal-dialog.modal-lg
+			.modal-content
+				.modal-header
+					button.close(data-dismiss='modal')
+						span(aria-hidden='true') &times;
+						span.sr-only Закрыть
+					h4#noveltyEditLabel.modal-title Редактирование новости
+				.modal-body
+					.row
+						.col-sm-12
+							.form-horizontal
+								.form-group
+									label.col-sm-3.control-label(for='inputTitle') Заголовок
+									.col-sm-9
+										input#inputTitle.form-control(placeholder='Заголовок новости' value='{{title}}')
+								.form-group
+									label.col-sm-3.control-label(for='inputImage') URL изображения
+									.col-sm-9
+										input#inputImage.form-control(placeholder='Маленькая картинка рядом с описанием' value='{{image}}')
+								.form-group
+									label.col-sm-3.control-label(for='inputDescription') Короткое описание
+									.col-sm-9
+										textarea#inputDescription.form-control(placeholder='Короткое описание новости' rows='6')
+								.form-group
+									label.col-sm-3.control-label(for='inputText') Полное описание
+									.col-sm-9
+										textarea#inputText.form-control(placeholder='Полное описание новости' rows='6')
+								.form-group
+									.col-sm-offset-3.col-sm-9
+										input#setOneComment(type='checkbox')
+										label(for='setOneComment') Один комментарий на человека
+
+				.modal-footer
+					button.btn.btn-danger(data-dismiss='modal') Отмена
+					button.btn.btn-info.btn-save-novelty Сохранить

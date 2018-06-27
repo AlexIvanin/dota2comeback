@@ -1,0 +1,1 @@
+UI.registerHelper 'getCommunityID', (steamID) -> new SteamID(steamID).GetCommunityID()

@@ -1,0 +1,57 @@
+template(name='novelty')
+	.container
+		.row
+			.col-sm-offset-1.col-sm-10
+				.row
+					.col-sm-12
+						.page-header(style='margin-top: 0')
+							h2(style='margin-top: 10px')
+								=title
+								small.pull-right.text-muted(style='text-transform: lowercase; line-height: 40px') 
+									| {{getTime date}} • Просмотров {{viewsCount}}
+				.row
+					.col-sm-12(style='min-height: 150px') {{getHtml text}}
+				.row
+					if isInRole 'admin'
+						p.pull-right
+							a.btn.btn-info(href='#' data-toggle='modal' data-target='#noveltyEditModal') Редактировать
+							button.btn.btn-danger.btn-remove-novelty Удалить
+					.col-sm-12
+						hr(style='margin-top: 0px')
+				.row
+					.col-sm-12
+						.text-center
+							h3 Комментарии ({{commentsCount}})
+						br
+						if comments.count
+							each comments
+								.media.comment
+									a.pull-left(href='/user/{{author.id}}' style='width: 48px; height: 48px')
+										img.media-object(src='{{author.services.steam.avatar.medium}}' alt='{{author.profile.name}}' style='border-radius: 50%; width: 100%')
+									.media-body
+										a(href='/user/{{author.id}}')
+											h4.media-heading=author.profile.name
+										=message
+										br
+										small.text-muted {{getTime date}}
+										if currentUser
+											.pull-right
+												a.btn-reply-comment(href='#')
+													i.glyphicon.glyphicon-pencil
+													| Ответить
+												| 
+												if isInRole 'admin'
+													a.btn-remove-comment(href='#')
+														i.glyphicon.glyphicon-trash
+														| Удалить
+													| 
+				.row
+					.col-sm-offset-2.col-sm-8
+						br
+						.well
+							.form-group(style='margin-bottom: 0')
+								textarea#comment.form-control(rows='4' placeholder='{{#unless currentUser}}Войдите в аккаунт чтобы комментировать{{else}}{{#if denyComment}}К этой новости можно оставлять не более одного комментария{{else}}Напишите здесь свой комментарий{{/if}}{{/unless}}' disabled="{{#unless currentUser}}true{{else}}{{#if denyComment}}true{{/if}}{{/unless}}")
+								br
+								button.btn-send-novelty-comment.btn.btn-success.btn-block(disabled='{{#unless currentUser}}true{{else}}{{#if denyComment}}true{{/if}}{{/unless}}') Отправить
+		if isInRole 'admin'
+			+noveltyEditModal

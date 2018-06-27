@@ -1,0 +1,47 @@
+template(name='top')
+	.container
+		.row
+			.col-sm-12
+				.page-header
+					h1 Топ пользователей
+		.row
+			.col-sm-12
+				table.table.table-responsive.table-hover.table-bordered.table-striped
+					thead
+						tr
+							th.text-center Место
+							th.text-center Никнейм
+							th.text-center Общий рейтинг
+							th.text-center Матчи
+					tbody
+						each users
+							tr(style='cursor: pointer' onclick='Router.go("/user/{{id}}")')
+								td.text-center=profile.rating.place
+								td
+									a(href='/user/{{id}}')
+										img(height='32' alt='Аватар пользователя {{profile.name}}' title='Перейти в профиль {{profile.name}}' src='{{services.steam.avatar.small}}' style='border-radius: 50%')
+										|  {{profile.name}}
+								td.text-center
+									span.text-info
+										if profile.rating.one.score
+											| {{toFixed profile.rating.one.score 0}}
+										else
+											|  - 
+									|  / 
+									span.text-info
+										if profile.rating.five.score
+											| {{toFixed profile.rating.five.score 0}}
+										else
+											|  - 
+								td.text-center
+									span.text-success
+										if profile.stats.matches.wins
+											=profile.stats.matches.wins
+										else
+											|  - 
+									|  / 
+									span.text-danger
+										if profile.stats.matches.loses
+											=profile.stats.matches.loses
+										else
+											|  - 

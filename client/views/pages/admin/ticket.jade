@@ -1,0 +1,54 @@
+template(name='adminTicket')
+	if isInRole 'admin'
+		.container
+			.row
+				.col-sm-12
+					.page-header
+						h2 Управление
+							span.text-muted - тикет №{{_id}}
+			.row
+				.col-sm-2
+					a.thumbnail(href='/user/{{author.id}}')
+						img.img-responsive(src='{{author.services.steam.avatar.full}}' alt='{{author.profile.name}}')
+				.col-sm-10
+					legend
+						a(href='/user/{{author.id}}')=author.profile.name
+						small.pull-right.text-muted.text-lowercase Написал {{getTime date}}
+					p=description
+			.row
+				.col-sm-12
+					br
+			each messages
+				.row
+					.col-sm-2
+						a.thumbnail(href='/user/{{author.id}}')
+							img.img-responsive(src='{{author.services.steam.avatar.full}}' alt='{{author.profile.name}}')
+					.col-sm-10
+						legend
+							if isAdmin
+								a(href='/user/{{author.id}}')
+									span.text-danger=author.profile.name
+							else
+								a(href='/user/{{author.id}}')=author.profile.name
+							small.pull-right.text-muted.text-lowercase Написал {{getTime date}}
+						p=message
+				.row
+					.col-sm-12
+						br
+			.row
+				.col-sm-12
+					hr
+			.row
+				.col-sm-offset-3.col-sm-9
+					.well
+						.form-group(style='margin-bottom: 0')
+							textarea#reply.form-control(rows='6' placeholder='Сообщение для ответа' disabled="{{#if closed}}true{{/if}}")
+							br
+						.form-group
+							input#setCloseTicket(type='checkbox' disabled="{{#if closed}}true{{/if}}")
+							label(for='#setCloseTicket') Закрыть тикет
+							br
+						.form-group
+							button.btn-send-ticket-reply.btn.btn-success.btn-block(disabled="{{#if closed}}true{{/if}}") Отправить
+	else
+		+forbidden

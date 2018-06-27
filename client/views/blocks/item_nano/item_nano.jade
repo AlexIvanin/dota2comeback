@@ -1,0 +1,8 @@
+template(name='item_nano')
+	.item_nano(style='{{#if selected}}border: 2px solid #5bc0de{{/if}}')
+		with description
+			img.img-responsive(src='http://steamcommunity-a.akamaihd.net/economy/image/{{icon_url}}' alt='{{name}}' onerror="this.onerror=null;this.src='https://steamcommunity-a.akamaihd.net/economy/image/{{icon_url}}'")
+			span(style='color: #{{name_color}}')=shortType
+		else
+			img.img-responsive(src='http://steamcommunity-a.akamaihd.net/economy/image/{{icon_url}}' alt='{{name}}' onerror="this.onerror=null;this.src='https://steamcommunity-a.akamaihd.net/economy/image/{{icon_url}}'")
+			span(style='color: #{{color}}')=rarity

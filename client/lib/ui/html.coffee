@@ -1,0 +1,1 @@
+UI.registerHelper 'getHtml', (html) -> new Handlebars.SafeString html

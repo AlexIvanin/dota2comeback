@@ -1,0 +1,115 @@
+template(name='index')
+	unless currentUser
+		+promo
+	.container
+		.row
+			.col-xs-8
+				ul#tabsMatches.nav.nav-tabs
+					li.active
+						a(href='#matchesInSearch' data-toggle='tab') В поиске
+					li
+						a(href='#matchesInGame' data-toggle='tab') В игре
+					li
+						a(href='#matchesPlayed' data-toggle='tab') Завершенные
+					if currentUser
+						li.pull-right
+							if currentUser.currentMatch
+								a.btn.btn-info(href='/match/{{currentUser.currentMatch._id}}') Мой матч
+							else
+								a.btn.btn-default(href='#' data-toggle='modal' data-target='#matchCreateModal' style='font-weight: bold') Создать матч
+
+				#matches.tab-content
+					#matchesInSearch.tab-pane.fade.active.in
+						if matchesInSearch.count
+							table.table.table-striped.table-bordered.table-responsive.table-hover
+								thead
+									tr
+										th.text-center Создал
+										th.text-center Ставка
+										th.text-center Слоты
+										th.text-center Параметры
+										th.text-center Мод
+										th.text-center Создано
+								tbody
+									each matchesInSearch
+										+matchInSearch
+						else
+							br
+							br
+							br
+							br
+							br
+							br
+							h1.text-muted.text-center Матчей пока нет
+							br
+							if currentUser
+								.text-center
+									a.btn.btn-info(href='#' data-toggle='modal' data-target='#matchCreateModal' style='font-weight: bold') Создать матч
+							br
+							br
+							br
+							br
+							br
+					#matchesInGame.tab-pane.fade
+						if matchesInGame.count
+							table.table.table-striped.table-bordered.table-hover
+								thead
+									tr
+										th.text-center Ставка
+										th.text-center Тип
+										th.text-center Параметры
+										th.text-center Мод
+										th.text-center Статус
+										th.text-center Начат
+								tbody
+									each matchesInGame
+										+matchInGame
+						else
+							br
+							br
+							br
+							br
+							br
+							br
+							h1.text-muted.text-center Нет live матчей
+							br
+							br
+							br
+							br
+							br
+							br
+					#matchesPlayed.tab-pane.fade
+						if matchesFinished.count
+							table.table.table-striped.table-bordered.table-hover
+								thead
+									tr
+										th.text-center Победитель
+										th.text-center Ставка
+										th.text-center Тип
+										th.text-center Параметры
+										th.text-center Мод
+										th.text-center Дата
+								tbody
+									each matchesFinished
+										+matchFinished
+							if hasMoreMatchesFinished
+								.text-center
+									h2.text-muted загружается
+									br
+						else
+							br
+							br
+							br
+							br
+							br
+							br
+							h1.text-muted.text-center Нет сыгранных матчей
+							br
+							br
+							br
+							br
+							br
+							br
+			.col-xs-4
+				+chat
+				+newUser

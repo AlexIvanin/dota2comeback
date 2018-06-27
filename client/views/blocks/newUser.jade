@@ -1,0 +1,7 @@
+template(name='newUser')
+	.well.text-center
+		p.lead.text-info(style='font-size: 15px; margin-bottom: 10px;') Приветствуем нового пользователя
+		with user
+			a(href='/user/{{id}}')
+				img(src='{{services.steam.avatar.small}}' alt='Аватар пользователя {{profile.name}}')
+				=profile.name
